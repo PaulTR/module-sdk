@@ -157,7 +157,8 @@ int8_t bme280_get_sample_forced_mode(struct bme280_dev *dev)
     return rslt;
   }
 
-  print_sensor_data(&comp_data);
+  printf_async("Temperature %ld, Pressure, %ld, Humidity %ld \r\n", comp_data->temperature, comp_data->pressure,
+             comp_data->humidity);
   return rslt;
 }
 
@@ -206,7 +207,8 @@ int8_t bmi160_get_all_with_time(struct bmi160_dev *sensor){
 
   /* To read both Accel and Gyro data along with time*/
   rslt = bmi160_get_sensor_data((BMI160_ACCEL_SEL | BMI160_GYRO_SEL | BMI160_TIME_SEL), &accel, &gyro, sensor);
-  bmi160_print_data(&accel, &gyro);
+  printf_async("BMM150 Accel x: %8i, y: %8i, z: %8i\r\n", accel->x, accel->y, accel->z);
+  printf_async("BMM150 Gyro  x: %8i, y: %8i, z: %8i\r\n", gyro->x, gyro->y, gyro->z);
   return rslt;
 }
 
@@ -267,7 +269,9 @@ int8_t bmm150_get_data(struct bmm150_dev *dev){
   /* Mag data for X,Y,Z axis are stored inside the
      bmm150_dev structure in int16_t format */
   rslt = bmm150_read_mag_data(dev);
-  bmm150_print_data(&dev->data);
+
+  printf_async("BMI150 Gyro  x: %8i, y: %8i, z: %8i\r\n", data->x, data->y, data->z);
+
   return rslt;
 }
 
@@ -275,26 +279,7 @@ int8_t opt3001_get_lux(struct opt3001_dev *dev){
   float data = 4.5;
   bool res   = OPT3001_getLux(dev, &data);
 
-  printf_async("OPT3001 Lux %i\r\n", data);
+  printf_async("OPT3001 Lux %i\r\n", (uint) data);
 
   return res != true;
 }
-
-void print_sensor_data(struct bme280_data *comp_data)
-{
-  printf_async("Temperature %ld, Pressure, %ld, Humidity %ld \r\n", comp_data->temperature, comp_data->pressure,
-               comp_data->humidity);
-}
-
-
-
-void bmm150_print_data(struct bmm150_mag_data *data)
-{
-  printf_async("BMI150 Gyro  x: %8i, y: %8i, z: %8i\r\n", data->x, data->y, data->z);
-}
-
-void bmi160_print_data(struct bmi160_sensor_data *accel, struct bmi160_sensor_data *gyro){
-  printf_async("BMM150 Accel x: %8i, y: %8i, z: %8i\r\n", accel->x, accel->y, accel->z);
-  printf_async("BMM150 Gyro  x: %8i, y: %8i, z: %8i\r\n", gyro->x, gyro->y, gyro->z);
-}
-

@@ -4,10 +4,9 @@
 #include <unistd.h>
 
 #include <button.h>
-#include <console.h>
 #include <led.h>
 #include <led.h>
-#include <rfcore.h>
+#include <rf.h>
 #include <timer.h>
 
 bool new_event = true;
@@ -38,7 +37,7 @@ static void timer_callback( __attribute__ ((unused)) int arg0,
 char* create_payload(void);
 
 int main(void) {
-  printf("Simple RF Demo!");
+  printf("Simple RF Demo\r\n");
 
   button_subscribe(button_callback, NULL);
 
@@ -48,22 +47,22 @@ int main(void) {
     button_enable_interrupt(i);
   }
 
-  if (!helium_driver_check()) {
+  if (!rf_driver_check()) {
     printf("Driver check OK\r\n");
   } else {
     printf("Driver check FAIL\r\n");
   }
 
-  if (!helium_set_address(address)) {
+  if (!rf_set_address(address)) {
     printf("Set address OK\r\n");
   } else {
     printf("Set address FAIL\r\n");
   }
 
-  if (!helium_init()) {
-    printf("Helium init OK\r\n");
+  if (!rf_init()) {
+    printf("Radio init OK\r\n");
   } else {
-    printf("Helium init FAIL\r\n");
+    printf("Radio init FAIL\r\n");
   }
 
   timer_every(30000, timer_callback, NULL, &simple_timer);
@@ -76,7 +75,7 @@ int main(void) {
              address);
     printf("Message [%s]", message);
 
-    int res = helium_send(0x0000, CAUT_TYPE_NONE, message, sizeof(message));
+    int res = rf_send(0x0000, CAUT_TYPE_NONE, message, sizeof(message));
     if (res != TOCK_SUCCESS) {
       printf("\r\nSend Fail\r\n");
     } else {

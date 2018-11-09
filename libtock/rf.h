@@ -12,13 +12,13 @@ extern "C" {
         CAUT_TYPE_CUSTOM = 2,
     } caut_type_t;
 
-    int helium_init(void);
+    int rf_init(void);
     
-    int helium_driver_check(void);
+    int rf_driver_check(void);
 
-    int helium_set_address(unsigned char *address);
+    int rf_set_address(unsigned char *address);
 
-    int helium_send(unsigned short addr,
+    int rf_send(unsigned short addr,
             caut_type_t type,
             const char *payload,
             unsigned char len);
