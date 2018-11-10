@@ -119,7 +119,8 @@ void packetizer_debug(void){
 packet_t* packet_assemble(void){
     int count = 0;
     char prefix[] = "payload:";
-    int packet_length = sizeof(prefix);
+    int prefix_len = strlen(prefix);
+    int packet_length = prefix_len;
 
     for(uint8_t i=0; i<packetizer.num; i++){
         if(current_packet[i].data!=NULL){
@@ -128,7 +129,8 @@ packet_t* packet_assemble(void){
         printf("%s\r\n", current_packet[i].data);
     }
     char * payload = malloc(packet_length+1);
-    memcpy(payload, &prefix, sizeof(prefix));
+    memcpy(payload, &prefix, prefix_len);
+    count += prefix_len;
     
     for(uint8_t i=0; i<packetizer.num; i++){
         memcpy(payload + count, current_packet[i].data, current_packet[i].len);
@@ -136,7 +138,7 @@ packet_t* packet_assemble(void){
         payload[count-1] =',';
     }
 
-    *(payload+count+1)='\0';
+    *(payload+count)='\0';
 
     packet_t* packet = malloc(sizeof(packet_t));
 
