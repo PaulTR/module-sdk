@@ -118,7 +118,7 @@ void packetizer_debug(void){
 
 packet_t* packet_assemble(void){
     int count = 0;
-    char prefix[] = "payload:{";
+    char prefix[] = "{";
     int prefix_len = strlen(prefix);
     int packet_length = prefix_len;
 
