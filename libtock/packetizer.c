@@ -65,6 +65,7 @@ typedef struct  {
 static datapoint_t* current_packet;
 
 PacketStatus packet_add_data(packet_sensor_t* sensor, void* data) {
+    //printf("crash\r\n");
     PacketStatus ret = PACKET_OK;
     // if there is no active packet being assembled,
     // allocate one
@@ -126,9 +127,7 @@ packet_t* packet_assemble(void){
         if(current_packet[i].data!=NULL){
             packet_length += current_packet[i].len + 1; //length plus comma
         }
-        printf("%s\r\n", current_packet[i].data);
     }
-    printf("length %u\r\n", packet_length);
     char * payload = malloc(packet_length+1);
     memcpy(payload, &prefix, prefix_len);
     count += prefix_len;
@@ -137,6 +136,7 @@ packet_t* packet_assemble(void){
         memcpy(payload + count, current_packet[i].data, current_packet[i].len);
         count += current_packet[i].len ;
         payload[count-1] =',';
+        free(current_packet[i].data);
     }
 
     payload[count-1]='}';
@@ -146,7 +146,11 @@ packet_t* packet_assemble(void){
 
     packet->data = (unsigned char*) payload;
     packet->len = count;
-    printf("New packet\r\n");
-    printf("%s\r\n", packet->data );
+
     return (packet_t*) packet;
 };
+
+void packet_disassemble(packet_t* packet){
+    free(packet->data);
+    free(packet);
+}

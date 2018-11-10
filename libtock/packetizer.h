@@ -47,6 +47,7 @@ typedef struct{
 } packet_t ;
 
 packet_t* packet_assemble(void);
+void packet_disassemble(packet_t* packet);
 
 void packetizer_debug(void);
 
