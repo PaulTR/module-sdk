@@ -85,7 +85,7 @@ PacketStatus packet_add_data(packet_sensor_t* sensor, void* data) {
         case UINT:
             bytes_required = 3 + packetizer.fields[sensor->index].len + 11 + 1;
             value = malloc(bytes_required*2);
-            snprintf(value, bytes_required, "\"%s\":%u", label, *((uint*)data));
+            bytes_required = snprintf(value, bytes_required, "\"%s\":%u", label, *((uint*)data)) + 1;
             if(value!=NULL){
                 current_packet[sensor->index].data = value;
                 current_packet[sensor->index].len = bytes_required-2;
@@ -94,10 +94,10 @@ PacketStatus packet_add_data(packet_sensor_t* sensor, void* data) {
         case INT:
             bytes_required = 3 + packetizer.fields[sensor->index].len + 12 + 1;
             value = malloc(bytes_required*2);
-            snprintf(value, bytes_required, "\"%s\":%i", label, *((int*)data));
+            bytes_required = snprintf(value, bytes_required, "\"%s\":%i", label, *((int*)data)) + 1;
             if(value!=NULL){
                 current_packet[sensor->index].data = value;
-                current_packet[sensor->index].len = bytes_required-2;
+                current_packet[sensor->index].len = bytes_required;
             }
             break;
         case FLOAT:
@@ -118,7 +118,7 @@ void packetizer_debug(void){
 
 packet_t* packet_assemble(void){
     int count = 0;
-    char prefix[] = "payload:";
+    char prefix[] = "payload:{";
     int prefix_len = strlen(prefix);
     int packet_length = prefix_len;
 
@@ -128,22 +128,25 @@ packet_t* packet_assemble(void){
         }
         printf("%s\r\n", current_packet[i].data);
     }
+    printf("length %u\r\n", packet_length);
     char * payload = malloc(packet_length+1);
     memcpy(payload, &prefix, prefix_len);
     count += prefix_len;
     
     for(uint8_t i=0; i<packetizer.num; i++){
         memcpy(payload + count, current_packet[i].data, current_packet[i].len);
-        count += current_packet[i].len +1 ;
+        count += current_packet[i].len ;
         payload[count-1] =',';
     }
 
-    *(payload+count)='\0';
+    payload[count-1]='}';
+    payload[count]='\0';
 
     packet_t* packet = malloc(sizeof(packet_t));
 
     packet->data = (unsigned char*) payload;
     packet->len = count;
-
+    printf("New packet\r\n");
+    printf("%s\r\n", packet->data );
     return (packet_t*) packet;
 };
