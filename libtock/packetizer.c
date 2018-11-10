@@ -145,6 +145,5 @@ packet_t* packet_assemble(void){
     packet->data = (unsigned char*) payload;
     packet->len = count;
 
-    printf("%s\r\n", payload);
     return (packet_t*) packet;
 };
