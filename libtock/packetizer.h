@@ -18,14 +18,10 @@ typedef enum {
 } PacketizerStatus;
 
 typedef enum {
-    UINT8_T,
-    UINT16_T,
-    UINT32_T,
-    INT8_T,
-    INT16_T,
-    INT32_T,
-    FLOAT,
-    DOUBLE
+    UINT = 0,
+    INT = 1,
+    FLOAT = 2,
+    DOUBLE = 3
 } DataType;
 
 typedef struct {
@@ -48,11 +44,11 @@ PacketStatus packet_add_data(packet_sensor_t* sensor, void* data);
 typedef struct{
     uint8_t * data;
     uint32_t len;
-}packet_t ;
+} packet_t ;
 
-packet_t* packet_assemble();
+packet_t* packet_assemble(void);
 
-int packetizer_debug(void);
+void packetizer_debug(void);
 
 #ifdef __cplusplus
 }

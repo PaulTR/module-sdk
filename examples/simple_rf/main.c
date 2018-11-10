@@ -8,6 +8,11 @@
 #include <led.h>
 #include <rf.h>
 #include <timer.h>
+#include <packetizer.h>
+
+packet_sensor_t pressure;
+packet_sensor_t temperature;
+
 
 bool new_event = true;
 char message[125];
@@ -39,6 +44,11 @@ char* create_payload(void);
 int main(void) {
   printf("Simple RF Demo\r\n");
 
+
+  packetizer_init(SER_MODE_JSON);
+  packetizer_add_sensor(&pressure, "pressure", UINT);
+  packetizer_add_sensor(&temperature, "temperature", INT);
+
   button_subscribe(button_callback, NULL);
 
   // Enable interrupts on each button.
@@ -69,6 +79,13 @@ int main(void) {
 
   while (1) {
     yield_for(&new_event);
+
+    uint32_t pressure_data = 1231249343;
+    int32_t temperature_data = 2343;
+    packet_add_data(&pressure, &pressure_data);
+    packet_add_data(&temperature, &temperature_data);
+
+    packet_t * packet = packet_assemble();
 
     snprintf(message, 125,
              "{\"team\":\"%9s\",\"payload\":\"Hello World!\"}\0",
